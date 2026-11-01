@@ -1,0 +1,26 @@
+{
+  "training_timestamp": "2026-10-27T00:16:01.770067",
+  "model_type": "IsolationForest",
+  "features": [
+    "Accelerometer1RMS",
+    "Accelerometer2RMS",
+    "Current",
+    "Temperature",
+    "Thermocouple",
+    "Voltage"
+  ],
+  "n_features": 6,
+  "random_state": 42,
+  "contamination": 0.01,
+  "train_samples": 7520,
+  "val_samples": 1881,
+  "validation_metrics": {
+    "val_samples": 1881,
+    "iso_val_false_positives": 41,
+    "iso_val_fpr": 0.0218,
+    "baseline_val_false_positives": 1094,
+    "baseline_val_fpr": 0.5816
+  },
+  "data_source": "SKAB anomaly-free/anomaly-free.csv",
+  "split_strategy": "Strict chronological split (first 80% train, last 19% val)"
+}
