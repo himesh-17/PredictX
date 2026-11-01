@@ -213,3 +213,26 @@ apiRouter.post("/ai/test-fixture", async (req: Request, res: Response) => {
   const result = await aiClientService.runIntegrationTest();
   res.json(result);
 });
+
+// 8. SECURITY & ADMIN AUTHENTICATION
+apiRouter.post("/auth/verify-admin", (req: Request, res: Response) => {
+  const { adminId, password } = req.body;
+  const configuredId = config.admin.id;
+  const configuredPassword = config.admin.password;
+
+  if (adminId === configuredId && password === configuredPassword) {
+    const token = Buffer.from(`${adminId}:${Date.now()}:${configuredPassword.slice(0, 4)}`).toString("base64");
+    return res.json({
+      success: true,
+      authenticated: true,
+      token,
+      message: "Admin authentication successful",
+    });
+  }
+
+  return res.status(401).json({
+    success: false,
+    authenticated: false,
+    message: "Invalid Admin ID or Password. Access denied.",
+  });
+});

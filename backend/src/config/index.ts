@@ -17,6 +17,10 @@ export const config = {
     autoStart: process.env.SIMULATION_AUTO_START !== "false",
   },
   corsOrigin: process.env.CORS_ORIGIN || "*",
+  admin: {
+    id: process.env.ADMIN_ID || "admin",
+    password: process.env.ADMIN_PASSWORD || "predictx2026",
+  },
   mongoOptions: {
     serverSelectionTimeoutMS: 8000, // 8-second timeout for Atlas DNS & TLS resolution
     connectTimeoutMS: 10000,

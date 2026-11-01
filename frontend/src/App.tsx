@@ -15,6 +15,21 @@ import { TeamPage } from "./sections/TeamPage";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>("live_esp32");
+  const [showSimulationTab, setShowSimulationTab] = useState<boolean>(() => {
+    const saved = localStorage.getItem("predictx_show_simulation");
+    return saved !== null ? saved === "true" : true;
+  });
+
+  const handleToggleShowSimulationTab = () => {
+    setShowSimulationTab((prev) => {
+      const next = !prev;
+      localStorage.setItem("predictx_show_simulation", String(next));
+      if (!next && activeTab === "sim_telemetry") {
+        setActiveTab("live_esp32");
+      }
+      return next;
+    });
+  };
 
   const {
     simHistory,
@@ -56,9 +71,8 @@ export function App() {
         simulationRunning={simulationRunning}
         isPaused={isPaused}
         lastUpdated={lastUpdated}
-        onToggleSimulation={toggleSimulation}
-        onTogglePause={togglePause}
         unreadAlertCount={unacknowledgedAlertCount}
+        showSimulationTab={showSimulationTab}
       />
 
       {/* Main Feature Content Container */}
@@ -126,12 +140,18 @@ export function App() {
           </div>
         )}
 
-        {/* TAB 5: MANAGE LIMITS */}
+        {/* TAB 5: MANAGE LIMITS & SIMULATION ACCESS (ADMIN SECURED) */}
         {activeTab === "manage_limits" && (
           <div className="space-y-6 animate-fadeIn">
             <LimitManager
               standardsConfig={standardsConfig}
               onSaveLimits={updateLimitsConfig}
+              simulationRunning={simulationRunning}
+              isPaused={isPaused}
+              onToggleSimulation={toggleSimulation}
+              onTogglePause={togglePause}
+              showSimulationTab={showSimulationTab}
+              onToggleShowSimulationTab={handleToggleShowSimulationTab}
             />
           </div>
         )}

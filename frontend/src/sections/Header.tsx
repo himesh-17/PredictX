@@ -28,9 +28,8 @@ interface HeaderProps {
   simulationRunning: boolean;
   isPaused: boolean;
   lastUpdated: string;
-  onToggleSimulation: () => void;
-  onTogglePause: () => void;
   unreadAlertCount: number;
+  showSimulationTab?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -42,9 +41,8 @@ export const Header: React.FC<HeaderProps> = ({
   simulationRunning,
   isPaused,
   lastUpdated,
-  onToggleSimulation,
-  onTogglePause,
   unreadAlertCount,
+  showSimulationTab = true,
 }) => {
   const formattedTime = lastUpdated
     ? new Date(lastUpdated).toLocaleTimeString()
@@ -114,31 +112,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* System Status Pill */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={onToggleSimulation}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-              simulationRunning
-                ? "bg-[#F87171]/20 text-[#F87171] border border-[#F87171]/40 hover:bg-[#F87171]/30"
-                : "bg-[#34D399]/20 text-[#34D399] border border-[#34D399]/40 hover:bg-[#34D399]/30"
-            }`}
-          >
-            <Power className="h-3.5 w-3.5" />
-            {simulationRunning ? "Stop Sim" : "Start Sim"}
-          </button>
-
-          <button
-            onClick={onTogglePause}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium border transition-all ${
-              isPaused
-                ? "bg-[#60A5FA]/20 text-[#60A5FA] border-[#60A5FA]/40 hover:bg-[#60A5FA]/30"
-                : "bg-[#172338] text-[#94A3B8] border-[#1E293B] hover:text-[#F1F5F9]"
-            }`}
-          >
-            {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-            {isPaused ? "Resume" : "Pause"}
-          </button>
+          <div className="flex items-center gap-1.5 rounded-md bg-[#172338] border border-[#1E293B] px-3 py-1.5 text-xs font-mono text-[#94A3B8]">
+            <Radio className="h-3 w-3 text-[#22D3EE] animate-pulse" />
+            <span>Telemetry Bus Active</span>
+          </div>
         </div>
       </div>
 
@@ -157,18 +136,20 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="rounded-full bg-[#34D399]/20 text-[#34D399] px-1.5 py-0.2 text-[10px]">Real</span>
         </button>
 
-        <button
-          onClick={() => onTabChange("sim_telemetry")}
-          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
-            activeTab === "sim_telemetry"
-              ? "bg-[#22D3EE]/20 text-[#22D3EE] border border-[#22D3EE]/50 shadow-sm"
-              : "bg-[#172338] text-[#94A3B8] border border-[#1E293B] hover:text-[#F1F5F9] hover:bg-[#172338]/80"
-          }`}
-        >
-          <LineChart className="h-3.5 w-3.5" />
-          <span>Telemetry & Charts</span>
-          <span className="rounded-full bg-[#FBBF24]/20 text-[#FBBF24] px-1.5 py-0.2 text-[10px]">Simulation</span>
-        </button>
+        {showSimulationTab && (
+          <button
+            onClick={() => onTabChange("sim_telemetry")}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
+              activeTab === "sim_telemetry"
+                ? "bg-[#22D3EE]/20 text-[#22D3EE] border border-[#22D3EE]/50 shadow-sm"
+                : "bg-[#172338] text-[#94A3B8] border border-[#1E293B] hover:text-[#F1F5F9] hover:bg-[#172338]/80"
+            }`}
+          >
+            <LineChart className="h-3.5 w-3.5" />
+            <span>Telemetry & Charts</span>
+            <span className="rounded-full bg-[#FBBF24]/20 text-[#FBBF24] px-1.5 py-0.2 text-[10px]">Simulation</span>
+          </button>
+        )}
 
         <button
           onClick={() => onTabChange("standards_ai")}

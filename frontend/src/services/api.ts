@@ -25,5 +25,7 @@ export const injectDisturbanceApi = async (type: string, durationSec = 20) => (a
 export const fetchAIStatus = async () => (await api.get("/ai/status")).data;
 export const fetchAIModelCard = async () => (await api.get("/ai/model-card")).data;
 export const runAIIntegrationTestApi = async () => (await api.post("/ai/test-fixture")).data;
+export const verifyAdminApi = async (adminId: string, password: string) => 
+  (await api.post("/auth/verify-admin", { adminId, password })).data;
 
 export default api;
