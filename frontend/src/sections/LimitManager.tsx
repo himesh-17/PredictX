@@ -294,23 +294,7 @@ export const LimitManager: React.FC<LimitManagerProps> = ({
           </div>
         </div>
 
-        {/* Credentials Helper Badge */}
-        <div className="rounded-lg bg-[#22D3EE]/10 border border-[#22D3EE]/30 p-3 text-xs text-[#CBD5E1] flex items-center justify-between">
-          <div>
-            <span className="text-[11px] text-[#94A3B8] block">Default Admin Credentials:</span>
-            <span className="font-mono text-[#22D3EE] font-bold">admin</span>
-            <span className="text-[#94A3B8] mx-1.5">/</span>
-            <span className="font-mono text-[#22D3EE] font-bold">predictx2026</span>
-          </div>
-          <button
-            type="button"
-            onClick={handleQuickUnlock}
-            className="flex items-center gap-1 rounded bg-[#22D3EE]/20 hover:bg-[#22D3EE]/30 border border-[#22D3EE]/40 px-2 py-1 text-[11px] font-bold text-[#22D3EE] transition-all"
-          >
-            <Sparkles className="h-3 w-3" />
-            <span>Quick Fill</span>
-          </button>
-        </div>
+        
 
         {authError && (
           <div className="rounded-lg bg-[#F87171]/15 border border-[#F87171]/40 p-3 text-xs text-[#F87171] flex items-center gap-2">
@@ -348,7 +332,7 @@ export const LimitManager: React.FC<LimitManagerProps> = ({
                 required
                 value={adminPassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
-                placeholder="Enter password (e.g. predictx2026)"
+                placeholder="Enter password"
                 className="w-full rounded-lg bg-[#0B1220] border border-[#1E293B] pl-9 pr-10 py-2 text-xs text-[#F1F5F9] focus:border-[#22D3EE] focus:ring-1 focus:ring-[#22D3EE] outline-none"
               />
               <button
