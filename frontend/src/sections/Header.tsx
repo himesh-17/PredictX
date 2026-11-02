@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </div>
             <p className="text-xs text-[#94A3B8]">
-              Predictive Maintenance & Standards Assessment for 3-Phase AC Induction Motor
+              AIoT-Based Predictive Maintenance & Machine Health Monitoring System
             </p>
           </div>
         </div>
