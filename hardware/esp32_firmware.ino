@@ -22,8 +22,8 @@
 const char* WIFI_SSID     = "YOUR_WIFI_SSID";
 const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 
-// Replace with your PC/Server IP address where the Node.js backend is running:
-const char* BACKEND_SERVER = "http://192.168.1.100:5000/api/v1/readings";
+// Live Render Production Endpoint (or local IP for offline testing):
+const char* BACKEND_SERVER = "https://predictx-backend-16j8.onrender.com/api/v1/readings";
 
 const char* MOTOR_ID      = "MOTOR-001";
 const int SAMPLE_WINDOW_MS = 1000; // 1-second rolling true RMS calculation window

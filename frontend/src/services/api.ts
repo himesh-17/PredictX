@@ -1,9 +1,10 @@
 import axios from "axios";
 import { Alert, SensorReading } from "../types";
 
+const backendBase = import.meta.env.VITE_BACKEND_URL || "";
 const api = axios.create({
-  baseURL: "/api/v1",
-  timeout: 5000,
+  baseURL: backendBase ? `${backendBase}/api/v1` : "/api/v1",
+  timeout: 8000,
 });
 
 export const fetchHealth = async () => (await api.get("/health")).data;

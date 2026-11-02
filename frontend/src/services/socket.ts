@@ -5,8 +5,8 @@ class SocketService {
 
   connect(): Socket {
     if (!this.socket) {
-      // Connects to proxy /socket.io in Vite or direct host
-      this.socket = io({
+      const backendBase = import.meta.env.VITE_BACKEND_URL || "";
+      this.socket = io(backendBase || undefined, {
         path: "/socket.io",
         transports: ["websocket", "polling"],
         reconnectionDelay: 1000,

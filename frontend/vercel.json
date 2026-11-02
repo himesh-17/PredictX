@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/v1/:path*",
-      "destination": "https://predict-x-backend.onrender.com/api/v1/:path*"
+      "destination": "https://predictx-backend-16j8.onrender.com/api/v1/:path*"
     },
     {
       "source": "/socket.io/:path*",
-      "destination": "https://predict-x-backend.onrender.com/socket.io/:path*"
+      "destination": "https://predictx-backend-16j8.onrender.com/socket.io/:path*"
     },
     {
       "source": "/(.*)",
