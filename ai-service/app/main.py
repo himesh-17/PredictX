@@ -1,3 +1,15 @@
+import sys
+from pathlib import Path
+
+# Add 'ai-service' and repository root to sys.path so 'app.*' imports resolve anywhere
+CURRENT_FILE = Path(__file__).resolve()
+AI_SERVICE_DIR = CURRENT_FILE.parent.parent  # .../ai-service
+REPO_ROOT = AI_SERVICE_DIR.parent            # .../ (workspace root)
+
+for path_dir in (str(AI_SERVICE_DIR), str(REPO_ROOT)):
+    if path_dir not in sys.path:
+        sys.path.insert(0, path_dir)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router

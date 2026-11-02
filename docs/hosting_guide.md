@@ -50,15 +50,15 @@ flowchart TD
 
 ### 2. AI Inference Microservice: Render / Railway
 - **Service**: [Render.com](https://render.com) or [Railway.app](https://railway.app)
-- **Type**: Web Service (Docker or Python 3.11)
-- **Configuration**:
+- **Type**: Web Service (Python 3.11)
+- **Configuration (Recommended)**:
   - **Repository**: Your GitHub repository
-  - **Root Directory**: `.`
+  - **Root Directory**: `ai-service`
+  - **Build Command**: `pip install -r requirements.txt`
+  - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- **Alternative (If Root Directory is left as `.` or empty)**:
   - **Build Command**: `pip install -r ai-service/requirements.txt`
-  - **Start Command**: `uvicorn ai-service.app.main:app --host 0.0.0.0 --port $PORT`
-  - **Environment Variables**:
-    - `PYTHON_VERSION`: `3.11.0`
-    - `MODEL_DIR`: `ml/saved_models`
+  - **Start Command**: `uvicorn app.main:app --app-dir ai-service --host 0.0.0.0 --port $PORT`
 - **Output URL**: `https://predict-x-ai.onrender.com`
 
 ---
