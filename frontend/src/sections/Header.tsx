@@ -30,6 +30,7 @@ interface HeaderProps {
   lastUpdated: string;
   unreadAlertCount: number;
   showSimulationTab?: boolean;
+  showLiveHardwareTab?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -43,6 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
   lastUpdated,
   unreadAlertCount,
   showSimulationTab = true,
+  showLiveHardwareTab = true,
 }) => {
   const formattedTime = lastUpdated
     ? new Date(lastUpdated).toLocaleTimeString()
@@ -123,18 +125,20 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Navigation Bar with Feature Tabs */}
       <nav className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#1E293B]/70 pt-3">
-        <button
-          onClick={() => onTabChange("live_esp32")}
-          className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
-            activeTab === "live_esp32"
-              ? "bg-[#34D399]/20 text-[#34D399] border border-[#34D399]/50 shadow-sm"
-              : "bg-[#172338] text-[#94A3B8] border border-[#1E293B] hover:text-[#F1F5F9] hover:bg-[#172338]/80"
-          }`}
-        >
-          <Wifi className="h-3.5 w-3.5" />
-          <span>Live ESP32 Hardware</span>
-          <span className="rounded-full bg-[#34D399]/20 text-[#34D399] px-1.5 py-0.2 text-[10px]">Real</span>
-        </button>
+        {showLiveHardwareTab && (
+          <button
+            onClick={() => onTabChange("live_esp32")}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
+              activeTab === "live_esp32"
+                ? "bg-[#34D399]/20 text-[#34D399] border border-[#34D399]/50 shadow-sm"
+                : "bg-[#172338] text-[#94A3B8] border border-[#1E293B] hover:text-[#F1F5F9] hover:bg-[#172338]/80"
+            }`}
+          >
+            <Wifi className="h-3.5 w-3.5" />
+            <span>Live ESP32 Hardware</span>
+            <span className="rounded-full bg-[#34D399]/20 text-[#34D399] px-1.5 py-0.2 text-[10px]">Real</span>
+          </button>
+        )}
 
         {showSimulationTab && (
           <button

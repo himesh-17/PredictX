@@ -19,13 +19,28 @@ export function App() {
     const saved = localStorage.getItem("predictx_show_simulation");
     return saved !== null ? saved === "true" : true;
   });
+  const [showLiveHardwareTab, setShowLiveHardwareTab] = useState<boolean>(() => {
+    const saved = localStorage.getItem("predictx_show_live_hardware");
+    return saved !== null ? saved === "true" : true;
+  });
 
   const handleToggleShowSimulationTab = () => {
     setShowSimulationTab((prev) => {
       const next = !prev;
       localStorage.setItem("predictx_show_simulation", String(next));
       if (!next && activeTab === "sim_telemetry") {
-        setActiveTab("live_esp32");
+        setActiveTab(showLiveHardwareTab ? "live_esp32" : "standards_ai");
+      }
+      return next;
+    });
+  };
+
+  const handleToggleShowLiveHardwareTab = () => {
+    setShowLiveHardwareTab((prev) => {
+      const next = !prev;
+      localStorage.setItem("predictx_show_live_hardware", String(next));
+      if (!next && activeTab === "live_esp32") {
+        setActiveTab(showSimulationTab ? "sim_telemetry" : "standards_ai");
       }
       return next;
     });
@@ -73,6 +88,7 @@ export function App() {
         lastUpdated={lastUpdated}
         unreadAlertCount={unacknowledgedAlertCount}
         showSimulationTab={showSimulationTab}
+        showLiveHardwareTab={showLiveHardwareTab}
       />
 
       {/* Main Feature Content Container */}
@@ -152,6 +168,8 @@ export function App() {
               onTogglePause={togglePause}
               showSimulationTab={showSimulationTab}
               onToggleShowSimulationTab={handleToggleShowSimulationTab}
+              showLiveHardwareTab={showLiveHardwareTab}
+              onToggleShowLiveHardwareTab={handleToggleShowLiveHardwareTab}
             />
           </div>
         )}

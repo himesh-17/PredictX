@@ -58,7 +58,7 @@ export const TeamPage: React.FC = () => {
       branch: "B.Tech - IoT ENgineering (3rd Year)",
       institution: "Department of IoT Engineering",
       email: "24eo10gu7@mitsgwl.ac.in",
-      photoUrl: "https://ui-avatars.com/api/?name=Gune+Jain&background=172338&color=22D3EE&size=256&bold=true",
+      photoUrl: "images/gune.jpeg",
       responsibilities: [
         "Hardware Circuit Design & Sensor Signal Conditioning",
         "Galvanic Isolation & Current Transformer (CT) Safety",
@@ -66,7 +66,7 @@ export const TeamPage: React.FC = () => {
         "Data Hygiene & Operational Validation Testing",
       ],
       skills: ["Circuit Schematic", "Signal Conditioning", "Power Safety", "Sensor Calibration", "ISO Standards"],
-      linkedin: "www.linkedin.com/in/gune-jain",
+      linkedin: "https://www.linkedin.com/in/gune-jain",
       github: "https://github.com/Gauri1224",
     },
     {
@@ -87,7 +87,7 @@ export const TeamPage: React.FC = () => {
       ],
       skills: ["React / Vite", "TypeScript", "Python / FastAPI", "Node.js", "Scikit-Learn"],
       
-      linkedin: "www.linkedin.com/in/himesh-badlani-03778b322/",
+      linkedin: "https://www.linkedin.com/in/himesh-badlani-03778b322/",
       github: "https://github.com/himesh-17",
     },
     {
@@ -97,8 +97,8 @@ export const TeamPage: React.FC = () => {
       enrollmentNo: "BTEO24O1030",
       branch: "B.Tech - IoT Engineering (3rd Year)",
       institution: "Department of IoT Engineering",
-      email: "member3.iot@college.edu",
-      photoUrl: "https://ui-avatars.com/api/?name=Team+Member&background=172338&color=34D399&size=256&bold=true",
+      email: "24eo10ma20@mitsgwl.ac.in",
+      photoUrl: "images/manas.jpeg",
       responsibilities: [
         "ESP32 Microcontroller Firmware Development",
         "1 kHz ADC Sampling & Circular Buffering",
@@ -107,8 +107,8 @@ export const TeamPage: React.FC = () => {
       ],
       skills: ["Embedded C++", "ESP32 DevKit", "I2C / 1-Wire", "FreeRTOS", "DSP Basics"],
     
-      linkedin: "https://linkedin.com",
-      github: "https://github.com",
+      linkedin: "https://www.linkedin.com/in/manaskukreja29",
+      github: "https://github.com/Manas-codezz",
     },
   ]);
 
@@ -119,7 +119,7 @@ export const TeamPage: React.FC = () => {
       name: "Dr. Aftab Ahmed Ansari",
       designation: "Assistant Professor",
       department: "Center of Internet of Things",
-      institution: "Madhab Institue of Technology & Science Gwalior",
+      institution: "Madhav Institue of Technology & Science Gwalior",
       email: "aftabansari@mitsgwalior.in",
       photoUrl: "/images/Mentor1.jpeg",
       specialization: "Model Predictive Control, Grid Connected Systems, IoT",
@@ -135,7 +135,7 @@ export const TeamPage: React.FC = () => {
       name: "Dr. Rupam Srivastava",
       designation: "Assistant Professor",
       department: "Department of AI & Data Science",
-      institution: "Madhab Institue of Technology & Science Gwalior",
+      institution: "Madhav Institue of Technology & Science Gwalior",
       email: "rupamsrivastava@mitsgwalior.in",
       photoUrl: "/images/Mentor2.jpg",
       specialization: "SPR-based Optical Sensors",
