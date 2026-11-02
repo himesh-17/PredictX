@@ -1,7 +1,7 @@
 {
-  "name": "motorguard-backend",
-  "version": "1.0.0",
-  "description": "Backend API and IoT Simulator for Motor Predictive Maintenance",
+  "name": "predictx-backend",
+  "version": "1.2.0",
+  "description": "Predict X - Backend API, Socket.IO Telemetry & Standards Assessment Engine",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node src/server.ts",
