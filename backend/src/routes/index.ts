@@ -77,9 +77,23 @@ const IngestionSchema = z.object({
   vibration: z.object({ value: z.number(), unit: z.string().default("g_rms"), axis: z.string().default("X") }),
 });
 
-apiRouter.post("/readings", async (req: Request, res: Response) => {
+function normalizeSensorPayload(body: any) {
+  if (!body || typeof body !== "object") return body;
+  return {
+    motorId: body.motorId || "MOTOR-001",
+    source: body.source || "hardware_esp32",
+    quality: body.quality || "valid",
+    current: typeof body.current === "number" ? { value: body.current, unit: "A" } : body.current,
+    voltage: typeof body.voltage === "number" ? { value: body.voltage, unit: "V" } : body.voltage,
+    temperature: typeof body.temperature === "number" ? { value: body.temperature, unit: "degC" } : body.temperature,
+    vibration: typeof body.vibration === "number" ? { value: body.vibration, unit: "g_rms", axis: "X" } : body.vibration,
+  };
+}
+
+apiRouter.post(["/readings", "/telemetry/hardware"], async (req: Request, res: Response) => {
   try {
-    const parsed = IngestionSchema.parse(req.body);
+    const normalized = normalizeSensorPayload(req.body);
+    const parsed = IngestionSchema.parse(normalized);
     const reading: SensorReading = {
       ...parsed,
       timestamp: new Date().toISOString(),
