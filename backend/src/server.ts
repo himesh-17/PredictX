@@ -11,9 +11,11 @@ const server = http.createServer(app);
 
 const io = new SocketIOServer(server, {
   cors: {
-    origin: config.corsOrigin,
+    origin: "*",
     methods: ["GET", "POST", "PATCH", "PUT"],
   },
+  transports: ["polling", "websocket"],
+  allowEIO3: true,
 });
 
 app.set("io", io);

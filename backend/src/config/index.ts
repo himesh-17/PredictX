@@ -11,7 +11,11 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   // Supports Local MongoDB or MongoDB Atlas (e.g. mongodb+srv://<user>:<password>@cluster.mongodb.net/predict_x)
   mongoUri: process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/predict_x",
-  aiServiceUrl: process.env.AI_SERVICE_URL || "http://127.0.0.1:8000/api/v1",
+  aiServiceUrl:
+    process.env.AI_SERVICE_URL ||
+    (process.env.RENDER || process.env.NODE_ENV === "production"
+      ? "https://predictx-tee8.onrender.com/api/v1"
+      : "http://127.0.0.1:8000/api/v1"),
   simulation: {
     defaultIntervalMs: parseInt(process.env.SIMULATION_INTERVAL_MS || "1000", 10),
     autoStart: process.env.SIMULATION_AUTO_START !== "false",

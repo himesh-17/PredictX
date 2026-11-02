@@ -1,10 +1,15 @@
 import axios from "axios";
 import { Alert, SensorReading } from "../types";
 
-const backendBase = import.meta.env.VITE_BACKEND_URL || "";
+// In production, fallback directly to the deployed Render backend if VITE_BACKEND_URL is not set
+const BACKEND_PROD_URL = "https://predictx-backend-16j8.onrender.com";
+const backendBase =
+  import.meta.env.VITE_BACKEND_URL ||
+  (import.meta.env.PROD ? BACKEND_PROD_URL : "");
+
 const api = axios.create({
   baseURL: backendBase ? `${backendBase}/api/v1` : "/api/v1",
-  timeout: 8000,
+  timeout: 10000,
 });
 
 export const fetchHealth = async () => (await api.get("/health")).data;
