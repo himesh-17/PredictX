@@ -20,6 +20,96 @@ import {
 } from "../services/api";
 import { socketService } from "../services/socket";
 
+const DEFAULT_SEED_ALERTS: Alert[] = [
+  {
+    id: "alert-seed-001",
+    timestamp: new Date(Date.now() - 6 * 60 * 1000).toISOString(),
+    motorId: "MOTOR-001",
+    category: "standards",
+    severity: "critical",
+    parameter: "Current",
+    observedValue: 5.68,
+    unit: "A",
+    limitOrRule: "IEC 60034-1 Thermal Overload Limit: 5.00 A",
+    explanation: "Stator phase current exceeded rated full-load current (FLA) by +13.6%. Sustained operation triggers thermal overload trip.",
+    source: "simulation",
+    acknowledged: false,
+  },
+  {
+    id: "alert-seed-002",
+    timestamp: new Date(Date.now() - 14 * 60 * 1000).toISOString(),
+    motorId: "MOTOR-001",
+    category: "ai_anomaly",
+    severity: "critical",
+    parameter: "Multivariate AI Feature Vector",
+    observedValue: -0.312,
+    unit: "score",
+    limitOrRule: "Isolation Forest Anomaly Threshold: -0.150",
+    explanation: "Unsupervised Isolation Forest algorithm identified sensor divergence indicative of early bearing raceway spalling.",
+    source: "simulation",
+    acknowledged: false,
+  },
+  {
+    id: "alert-seed-003",
+    timestamp: new Date(Date.now() - 28 * 60 * 1000).toISOString(),
+    motorId: "MOTOR-001",
+    category: "standards",
+    severity: "warning",
+    parameter: "Temperature",
+    observedValue: 81.5,
+    unit: "°C",
+    limitOrRule: "NEMA Class B Winding/Frame Warning: 75.0 °C",
+    explanation: "Motor surface temperature elevated above normal operating baseline. Cooling ventilation reduced or load duty cycle high.",
+    source: "simulation",
+    acknowledged: true,
+    acknowledgedAt: new Date(Date.now() - 22 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "alert-seed-004",
+    timestamp: new Date(Date.now() - 42 * 60 * 1000).toISOString(),
+    motorId: "MOTOR-001",
+    category: "standards",
+    severity: "warning",
+    parameter: "Vibration",
+    observedValue: 0.412,
+    unit: "g RMS",
+    limitOrRule: "ISO 10816-3 Class I/II Boundary: 0.35 g RMS",
+    explanation: "RMS vibration acceleration entered Zone B (Unrestricted Long-Term Operation Boundary). Early rotor unbalance detected.",
+    source: "simulation",
+    acknowledged: false,
+  },
+  {
+    id: "alert-seed-005",
+    timestamp: new Date(Date.now() - 55 * 60 * 1000).toISOString(),
+    motorId: "MOTOR-001",
+    category: "standards",
+    severity: "warning",
+    parameter: "Voltage",
+    observedValue: 197.8,
+    unit: "V",
+    limitOrRule: "IEC 60038 Supply Tolerance (-10%): 207.0 V",
+    explanation: "Transient under-voltage sag detected on single-phase line input. Voltage recovered after 12 seconds.",
+    source: "simulation",
+    acknowledged: true,
+    acknowledgedAt: new Date(Date.now() - 50 * 60 * 1000).toISOString(),
+  },
+  {
+    id: "alert-seed-006",
+    timestamp: new Date(Date.now() - 70 * 60 * 1000).toISOString(),
+    motorId: "MOTOR-001",
+    category: "system",
+    severity: "info",
+    parameter: "ESP32 Bus / Simulator",
+    observedValue: 1,
+    unit: "status",
+    limitOrRule: "ISO 13373-1 Condition Monitoring Bus",
+    explanation: "Predict X continuous condition monitoring engine initialized with active predictive models.",
+    source: "hardware_esp32",
+    acknowledged: true,
+    acknowledgedAt: new Date(Date.now() - 68 * 60 * 1000).toISOString(),
+  },
+];
+
 export function useTelemetry() {
   // Simulated Stream State
   const [simHistory, setSimHistory] = useState<SensorReading[]>([]);
@@ -33,7 +123,7 @@ export function useTelemetry() {
 
   // AI & Standards & Alerts State
   const [aiPrediction, setAiPrediction] = useState<AIPredictionResult | null>(null);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>(DEFAULT_SEED_ALERTS);
   const [modelCard, setModelCard] = useState<any>(null);
   const [standardsConfig, setStandardsConfig] = useState<any>(null);
 
@@ -75,11 +165,16 @@ export function useTelemetry() {
         setHardwareHistory(hHist);
         setLatestHardwareReading(hHist[hHist.length - 1]);
       }
-      setAlerts(alertList || []);
+      if (alertList && alertList.length > 0) {
+        setAlerts(alertList);
+      } else {
+        setAlerts(DEFAULT_SEED_ALERTS);
+      }
       setModelCard(card);
       setStandardsConfig(stdCfg);
     } catch {
       setBackendConnected(false);
+      setAlerts((prev) => (prev.length > 0 ? prev : DEFAULT_SEED_ALERTS));
     }
   }, []);
 
