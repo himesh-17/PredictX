@@ -5,6 +5,7 @@ import { logger } from "../utils/logger";
 
 export class AIClientService {
   private baseUrl = config.aiServiceUrl;
+  private lastWarnTime = 0;
 
   async getHealth(): Promise<{ isOnline: boolean; details?: any }> {
     try {
@@ -34,7 +35,11 @@ export class AIClientService {
       const res = await axios.post(`${this.baseUrl}/predict`, reading, { timeout: 2500 });
       return res.data as AIPredictionResult;
     } catch (err: any) {
-      logger.warn({ err: err.message }, "AI inference service call failed or offline");
+      const now = Date.now();
+      if (now - this.lastWarnTime > 30000) {
+        logger.warn({ err: err.message, target: this.baseUrl }, "AI inference service is offline or unreachable. Telemetry running with fallback.");
+        this.lastWarnTime = now;
+      }
       return {
         status: "MODEL_UNAVAILABLE",
         prediction: null,
