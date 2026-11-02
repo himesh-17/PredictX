@@ -15,7 +15,7 @@ app.use("/images", express.static(path.resolve(__dirname, "../../frontend/public
 app.use(express.static(path.resolve(__dirname, "../../frontend/dist")));
 
 // Request logging middleware
-app.use((req, res, next) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (req.path !== "/api/v1/health") {
     logger.debug({ method: req.method, path: req.path }, "Incoming HTTP request");
   }
