@@ -55,10 +55,10 @@ flowchart TD
   - **Repository**: Your GitHub repository
   - **Root Directory**: `ai-service`
   - **Build Command**: `pip install -r requirements.txt`
-  - **Start Command**: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+  - **Start Command**: `python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT`
 - **Alternative (If Root Directory is left as `.` or empty)**:
-  - **Build Command**: `pip install -r ai-service/requirements.txt`
-  - **Start Command**: `uvicorn app.main:app --app-dir ai-service --host 0.0.0.0 --port $PORT`
+  - **Build Command**: `pip install -r requirements.txt`
+  - **Start Command**: `python -m uvicorn app.main:app --app-dir ai-service --host 0.0.0.0 --port $PORT`
 - **Output URL**: `https://predict-x-ai.onrender.com`
 
 ---
