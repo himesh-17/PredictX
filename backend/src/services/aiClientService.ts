@@ -7,9 +7,18 @@ export class AIClientService {
   private baseUrl = config.aiServiceUrl;
   private lastWarnTime = 0;
 
+  constructor() {
+    // Keep-alive ping every 9 minutes to keep Render Free tier container awake
+    if (this.baseUrl.startsWith("https://")) {
+      setInterval(() => {
+        axios.get(`${this.baseUrl}/health`, { timeout: 15000 }).catch(() => {});
+      }, 9 * 60 * 1000);
+    }
+  }
+
   async getHealth(): Promise<{ isOnline: boolean; details?: any }> {
     try {
-      const res = await axios.get(`${this.baseUrl}/health`, { timeout: 1500 });
+      const res = await axios.get(`${this.baseUrl}/health`, { timeout: 8000 });
       return { isOnline: res.status === 200, details: res.data };
     } catch (err: any) {
       return { isOnline: false, details: { error: err.message } };
@@ -18,7 +27,7 @@ export class AIClientService {
 
   async getModelCard(): Promise<any> {
     try {
-      const res = await axios.get(`${this.baseUrl}/model-card`, { timeout: 2000 });
+      const res = await axios.get(`${this.baseUrl}/model-card`, { timeout: 8000 });
       return res.data;
     } catch (err: any) {
       return {
@@ -32,7 +41,7 @@ export class AIClientService {
 
   async predict(reading: SensorReading): Promise<AIPredictionResult> {
     try {
-      const res = await axios.post(`${this.baseUrl}/predict`, reading, { timeout: 2500 });
+      const res = await axios.post(`${this.baseUrl}/predict`, reading, { timeout: 8000 });
       return res.data as AIPredictionResult;
     } catch (err: any) {
       const now = Date.now();
