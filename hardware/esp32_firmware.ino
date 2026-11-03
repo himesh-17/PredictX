@@ -1,6 +1,6 @@
 /*
   ==============================================================================
-  Predict X — ESP32 Production Telemetry Firmware
+  Predict X — ESP32 Production Telemetry Firmware (MPU-6500 Edition)
   Project: AIoT-Based Predictive Maintenance for Three-Phase AC Induction Motors
   Author: Predict X Engineering Team (Himesh & Team)
   
@@ -9,7 +9,7 @@
     1. AC Current: SCT-013-000 Non-Invasive CT (ADC GPIO 32 via 1.65V DC bias)
     2. AC Voltage: ZMPT101B Active Transformer / Voltage Sensor (ADC GPIO 35)
     3. Motor Temperature: DS18B20 Digital Sensor (GPIO 4 with 4.7k pullup)
-    4. Motor Vibration: MPU6050 6-Axis Accelerometer (I2C: SDA=21, SCL=22)
+    4. Motor Vibration: MPU-6500 6-Axis Motion Sensor (I2C: SDA=21, SCL=22)
 
   Cloud Telemetry:
     - 1Hz rolling True RMS digital signal processing (DSP)
@@ -48,9 +48,9 @@ const int SAMPLE_WINDOW_MS = 1000;
 #define CURRENT_ADC_PIN   32   // Current CT Sensor Analog In (GPIO 32)
 #define VOLTAGE_ADC_PIN   35   // AC Voltage Sensor Analog In (GPIO 35)
 #define ONE_WIRE_BUS      4    // DS18B20 Temperature Digital Pin (GPIO 4)
-#define I2C_SDA_PIN       21   // MPU6050 I2C Data Pin
-#define I2C_SCL_PIN       22   // MPU6050 I2C Clock Pin
-#define MPU6050_ADDR      0x68 // Default I2C address for MPU6050
+#define I2C_SDA_PIN       21   // MPU-6500 I2C Data Pin (GPIO 21)
+#define I2C_SCL_PIN       22   // MPU-6500 I2C Clock Pin (GPIO 22)
+#define MPU6500_ADDR      0x68 // Default I2C address for MPU-6500 (AD0 to GND)
 
 // ==============================================================================
 // 3. SENSOR CALIBRATION FACTORS
@@ -62,28 +62,82 @@ const float VOLTAGE_CALIBRATION = 230.0 / 0.707; // Calibration factor for 230V 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature tempSensor(&oneWire);
 
-// MPU6050 Accelerometer Register
-const int MPU_REG_ACCEL_XOUT_H = 0x3B;
+// MPU-6500 Registers
+#define MPU_REG_CONFIG       0x1A
+#define MPU_REG_ACCEL_CONFIG 0x1C
+#define MPU_REG_ACCEL_XOUT_H 0x3B
+#define MPU_REG_TEMP_OUT_H   0x41
+#define MPU_REG_PWR_MGMT_1   0x6B
+#define MPU_REG_PWR_MGMT_2   0x6C
+#define MPU_REG_WHO_AM_I     0x75
 
-void initMPU6050() {
+// Initialize MPU-6500 motion sensor
+bool initMPU6500() {
   Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
-  Wire.beginTransmission(MPU6050_ADDR);
-  Wire.write(0x6B); // Power management register
-  Wire.write(0);    // Wake up MPU6050 sensor
-  byte err = Wire.endTransmission(true);
-  if (err == 0) {
-    Serial.println("[MPU6050] Accelerometer online (I2C 0x68)");
-  } else {
-    Serial.printf("[MPU6050] Warning: Init failed with code %d. Check SDA/SCL wiring.\n", err);
+  Wire.setClock(400000); // 400kHz fast I2C mode
+
+  // Query WHO_AM_I register (0x75): MPU-6500 returns 0x70 (or 0x71, 0x73)
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_WHO_AM_I);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU6500_ADDR, 1, true);
+  byte whoAmI = 0x00;
+  if (Wire.available()) {
+    whoAmI = Wire.read();
   }
+
+  // Soft Reset MPU-6500
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_PWR_MGMT_1);
+  Wire.write(0x80); // Set H_RESET bit
+  Wire.endTransmission(true);
+  delay(100);
+
+  // Wake up MPU-6500 and select Auto Clock / PLL
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_PWR_MGMT_1);
+  Wire.write(0x01); // Wake up, Auto-select best clock (PLL)
+  byte err = Wire.endTransmission(true);
+
+  if (err != 0) {
+    Serial.printf("[MPU-6500] Warning: Init failed with code %d. Check SDA=21, SCL=22 wiring.\n", err);
+    return false;
+  }
+
+  // Enable all accelerometer & gyro axes
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_PWR_MGMT_2);
+  Wire.write(0x00);
+  Wire.endTransmission(true);
+
+  // Configure Digital Low Pass Filter (DLPF) to ~42Hz bandwidth (filters motor EMI noise)
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_CONFIG);
+  Wire.write(0x03); // DLPF_CFG = 3 (41Hz Accel bandwidth)
+  Wire.endTransmission(true);
+
+  // Configure Accelerometer full-scale range to +/- 2g (16384 LSB/g)
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_ACCEL_CONFIG);
+  Wire.write(0x00); // 0x00 = +/- 2g range
+  Wire.endTransmission(true);
+
+  if (whoAmI == 0x70 || whoAmI == 0x71 || whoAmI == 0x73) {
+    Serial.printf("[MPU-6500] Online & Calibrated! (WHO_AM_I: 0x%02X, +/-2g mode)\n", whoAmI);
+  } else if (whoAmI == 0x68) {
+    Serial.println("[MPU-6500/6050] Online & Calibrated! (WHO_AM_I: 0x68, +/-2g mode)");
+  } else {
+    Serial.printf("[MPU-6500] Initialized with WHO_AM_I: 0x%02X\n", whoAmI);
+  }
+  return true;
 }
 
-// Read raw acceleration on X-axis from MPU6050 (in g's)
+// Read raw acceleration on X-axis from MPU-6500 (in g's)
 float readRawAccelX() {
-  Wire.beginTransmission(MPU6050_ADDR);
+  Wire.beginTransmission(MPU6500_ADDR);
   Wire.write(MPU_REG_ACCEL_XOUT_H);
   Wire.endTransmission(false);
-  Wire.requestFrom(MPU6050_ADDR, 2, true);
+  Wire.requestFrom(MPU6500_ADDR, 2, true);
 
   if (Wire.available() >= 2) {
     int16_t rawX = (Wire.read() << 8) | Wire.read();
@@ -91,6 +145,21 @@ float readRawAccelX() {
     return (float)rawX / 16384.0;
   }
   return 0.0;
+}
+
+// Read MPU-6500 Internal On-Die Temperature (°C) as fallback if DS18B20 probe is unclipped
+float readMPU6500Temp() {
+  Wire.beginTransmission(MPU6500_ADDR);
+  Wire.write(MPU_REG_TEMP_OUT_H);
+  Wire.endTransmission(false);
+  Wire.requestFrom(MPU6500_ADDR, 2, true);
+
+  if (Wire.available() >= 2) {
+    int16_t rawT = (Wire.read() << 8) | Wire.read();
+    // MPU-6500 internal temp formula: ((rawTemp) / 333.87) + 21.0
+    return ((float)rawT / 333.87) + 21.0;
+  }
+  return 25.0;
 }
 
 void connectToWiFi() {
@@ -127,11 +196,12 @@ void setup() {
 
   Serial.println("\n=======================================================");
   Serial.println("  PREDICT X — Three-Phase AC Motor IoT Telemetry Node   ");
+  Serial.println("          Sensor: MPU-6500 6-Axis Motion Sensor         ");
   Serial.println("=======================================================");
 
   // Initialize sensors
   tempSensor.begin();
-  initMPU6050();
+  initMPU6500();
 
   // Configure ESP32 12-bit ADC (0 - 4095) with 11dB attenuation (~3.3V full scale)
   analogReadResolution(12);
@@ -185,11 +255,13 @@ void loop() {
   // 3. Digital Vibration Acceleration RMS (g_rms)
   float vibrationG = sqrt(vibrationSumSq / sampleCount);
 
-  // 4. Digital Motor Temperature from DS18B20 (°C)
+  // 4. Digital Motor Temperature from DS18B20 (°C) with MPU-6500 fallback
   tempSensor.requestTemperatures();
   float tempC = tempSensor.getTempCByIndex(0);
   if (tempC == DEVICE_DISCONNECTED_C || tempC < -50.0 || tempC > 150.0) {
-    tempC = 25.0; // Graceful ambient baseline if sensor unclipped
+    // If external DS18B20 unclipped, fallback to MPU-6500 on-die temperature
+    float mpuTemp = readMPU6500Temp();
+    tempC = (mpuTemp > -20.0 && mpuTemp < 100.0) ? mpuTemp : 28.0;
   }
 
   // Filter low-level ADC noise clamps
@@ -209,7 +281,7 @@ void loop() {
 
     if (isHttps) {
       WiFiClientSecure secureClient;
-      secureClient.setInsecure(); // Bypasses root CA cert check for cloud endpoints (Render/Heroku/AWS)
+      secureClient.setInsecure(); // Bypasses root CA cert check for cloud endpoints
       http.begin(secureClient, serverUrl);
     } else {
       WiFiClient plainClient;

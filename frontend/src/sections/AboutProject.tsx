@@ -98,7 +98,7 @@ export const AboutProject: React.FC = () => {
               </div>
               <p className="text-xs text-[#94A3B8] mb-3">
                 Isolated monitoring circuit wiring diagram showing sensor connections (CT clamp on GPIO 32, 
-                DS18B20 on GPIO 4, MPU6050 I2C on GPIO 21/22, and galvanic separation from high-voltage motor mains).
+                DS18B20 on GPIO 4, MPU-6500 I2C on GPIO 21/22, and galvanic separation from high-voltage motor mains).
               </p>
             </div>
 
@@ -137,7 +137,7 @@ export const AboutProject: React.FC = () => {
             </p>
             <ul className="text-xs text-[#CBD5E1] space-y-1.5 list-disc list-inside">
               <li><strong>AC Current Sensor (CT):</strong> Non-invasive clamp on Phase A to detect mechanical overload and unbalanced draw.</li>
-              <li><strong>MPU6050 (I2C):</strong> 3-axis accelerometer bolted to bearing cap measuring high-frequency impact acceleration RMS.</li>
+              <li><strong>MPU-6500 (I2C):</strong> 6-axis high-bandwidth motion sensor bolted to bearing cap measuring dynamic impact vibration acceleration RMS.</li>
               <li><strong>DS18B20 (1-Wire):</strong> Digital thermal sensor measuring frame surface temperature rise.</li>
             </ul>
           </div>
@@ -299,7 +299,7 @@ export const AboutProject: React.FC = () => {
 
               <div>
                 <span className="font-bold text-[#F1F5F9] block mb-0.5">5. Accelerometer Bandwidth Limitations</span>
-                The MPU6050 sampling over standard I2C provides excellent low-frequency vibration monitoring (unbalance, misalignment), but lacks the multi-kilohertz bandwidth of industrial piezo accelerometers for microscopic bearing defect frequencies.
+                The MPU-6500 sampling over standard I2C provides excellent low-frequency vibration monitoring (unbalance, misalignment), but lacks the multi-kilohertz bandwidth of industrial piezo accelerometers for microscopic bearing defect frequencies.
               </div>
             </div>
           </div>

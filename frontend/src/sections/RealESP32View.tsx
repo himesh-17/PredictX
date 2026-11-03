@@ -219,7 +219,7 @@ export const RealESP32View: React.FC<RealESP32ViewProps> = ({
           </p>
           <ul className="text-xs text-[#94A3B8] space-y-1 list-disc list-inside">
             <li>True RMS calculation over 1000 ADC samples (1 kHz sampling rate)</li>
-            <li>MPU6050 I2C accelerometer acceleration RMS computation</li>
+            <li>MPU-6500 I2C motion sensor vibration acceleration RMS computation</li>
             <li>DS18B20 1-Wire temperature acquisition</li>
             <li>WiFi client HTTP POST transmission to backend <code>/api/v1/readings</code></li>
           </ul>

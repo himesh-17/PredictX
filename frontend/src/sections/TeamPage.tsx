@@ -103,7 +103,7 @@ export const TeamPage: React.FC = () => {
         "ESP32 Microcontroller Firmware Development",
         "1 kHz ADC Sampling & Circular Buffering",
         "On-Device True RMS Digital Signal Processing",
-        "Sensor Interfacing (MPU6050 I2C & DS18B20 1-Wire)",
+        "Sensor Interfacing (MPU-6500 I2C & DS18B20 1-Wire)",
       ],
       skills: ["Embedded C++", "ESP32 DevKit", "I2C / 1-Wire", "FreeRTOS", "DSP Basics"],
     

@@ -5,7 +5,7 @@ When connecting the laboratory AC induction motor:
 - **Phase Current:** Non-invasive Current Transformer (e.g. SCT-013-000, 100A/50mA) or Hall-effect sensor (ACS712) with burden resistor and ADC bias network.
 - **Line Voltage:** ZMPT101B active precision voltage transformer module.
 - **Surface / Winding Temperature:** DS18B20 1-Wire digital temperature sensor mounted to motor frame.
-- **Vibration:** MPU6050 6-DOF IMU or ADXL345 3-axis accelerometer rigidly bolted to motor bearing housing.
+- **Vibration:** MPU-6500 6-DOF IMU or ADXL345 3-axis accelerometer rigidly bolted to motor bearing housing.
 
 ## 2. Edge Preprocessing on ESP32
 Raw accelerometer and current signals must **not** be streamed directly to the cloud at kHz rates. The ESP32 firmware should execute on-device windowing:

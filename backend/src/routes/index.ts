@@ -24,7 +24,7 @@ const DEFAULT_MOTOR: MotorInfo = {
   poles: 4,
   insulationClass: "Class F",
   mounting: "Horizontal Foot Mounted (B3)",
-  sensorsInstalled: ["Current CT (Phase A)", "Voltage Divider/ZMPT", "DS18B20 Temp", "MPU6050 Accelerometer"],
+  sensorsInstalled: ["Current CT (Phase A)", "Voltage Divider/ZMPT", "DS18B20 Temp", "MPU6500 Accelerometer"],
 };
 
 // 1. HEALTH ENDPOINT
