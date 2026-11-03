@@ -275,21 +275,6 @@ void loop() {
   // Transmit payload to Cloud Backend
   if (WiFi.status() == WL_CONNECTED) {
     String serverUrl = String(BACKEND_SERVER);
-    bool isHttps = serverUrl.startsWith("https://");
-
-    HTTPClient http;
-
-    if (isHttps) {
-      WiFiClientSecure secureClient;
-      secureClient.setInsecure(); // Bypasses root CA cert check for cloud endpoints
-      http.begin(secureClient, serverUrl);
-    } else {
-      WiFiClient plainClient;
-      http.begin(plainClient, serverUrl);
-    }
-
-    http.addHeader("Content-Type", "application/json");
-    http.setTimeout(4000); // 4-second cloud timeout
 
     // JSON Payload adhering to Predict X Ingestion Specification
     String payload = "{";
@@ -302,17 +287,29 @@ void loop() {
     payload += "\"vibration\":{\"value\":" + String(vibrationG, 4) + ",\"unit\":\"g_rms\",\"axis\":\"X\"}";
     payload += "}";
 
-    int httpResponseCode = http.POST(payload);
+    // Maintain WiFiClientSecure in the same scope as HTTPClient so its TLS engine remains active during POST
+    WiFiClientSecure secureClient;
+    secureClient.setInsecure(); // Bypasses root CA cert check for cloud endpoints (Render/Cloudflare)
 
-    if (httpResponseCode == 200 || httpResponseCode == 201) {
-      Serial.printf("[Cloud Transmission] SUCCESS (HTTP %d) -> Sent to %s\n", httpResponseCode, BACKEND_SERVER);
-    } else if (httpResponseCode > 0) {
-      Serial.printf("[Cloud Transmission] Warning (HTTP %d) -> %s\n", httpResponseCode, http.getString().c_str());
+    HTTPClient http;
+    if (http.begin(secureClient, serverUrl)) {
+      http.addHeader("Content-Type", "application/json");
+      http.setTimeout(8000); // 8-second timeout for cloud transmission
+
+      int httpResponseCode = http.POST(payload);
+
+      if (httpResponseCode == 200 || httpResponseCode == 201) {
+        Serial.printf("[Cloud Transmission] SUCCESS (HTTP %d) -> Sent to %s\n", httpResponseCode, BACKEND_SERVER);
+      } else if (httpResponseCode > 0) {
+        Serial.printf("[Cloud Transmission] Warning (HTTP %d): %s\n", httpResponseCode, http.getString().c_str());
+      } else {
+        Serial.printf("[Cloud Transmission] Failed: %s\n", http.errorToString(httpResponseCode).c_str());
+      }
+
+      http.end();
     } else {
-      Serial.printf("[Cloud Transmission] Failed: %s\n", http.errorToString(httpResponseCode).c_str());
+      Serial.println("[Cloud Transmission] Failed to initiate connection to backend.");
     }
-
-    http.end();
   } else {
     Serial.println("[WiFi] Lost connection, reconnecting...");
     WiFi.reconnect();
