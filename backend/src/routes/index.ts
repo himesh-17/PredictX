@@ -94,8 +94,8 @@ function getOrganicBaseline() {
   // 2. Voltage: Nominal 229.4 V (utility 230V single-phase grid with subtle line variance) [227.8 V to 231.2 V]
   const voltageVal = parseFloat((229.4 + 1.2 * Math.cos(t * 0.4) + rand(0.5)).toFixed(1));
 
-  // 3. Temperature: Nominal 43.6 °C (normal warm stator surface temperature) [43.1 °C to 44.2 °C]
-  const tempVal = parseFloat((43.6 + 0.4 * Math.sin(t * 0.15) + rand(0.1)).toFixed(2));
+  // 3. Temperature: Ambient Room Temperature ~25.5 °C with continuous natural thermal ripple [24.8 °C to 26.3 °C]
+  const tempVal = parseFloat((25.5 + 0.45 * Math.sin(t * 0.35) + 0.25 * Math.cos(t * 0.18) + rand(0.1)).toFixed(2));
 
   // 4. Vibration: Nominal 0.082 g RMS (smooth bearing mechanical rotation) [0.071 g to 0.094 g]
   const vibVal = parseFloat((0.082 + 0.009 * Math.sin(t * 1.5) + rand(0.004)).toFixed(4));
@@ -134,11 +134,11 @@ function normalizeSensorPayload(body: any) {
     voltage = { value: baseline.voltage, unit: "V" };
   }
 
-  // Temperature: If real value present (> 1.0 °C), use it; if zero/missing (unplugged DS18B20), inject organic 43.6°C baseline
+  // Temperature: If real value present (> 5.0 °C and < 84.0 °C), use it; if zero/missing/unplugged, inject room temp baseline
   let temperature = body.temperature;
   if (typeof temperature === "number") {
-    temperature = temperature > 1.0 ? { value: temperature, unit: "degC" } : { value: baseline.temperature, unit: "degC" };
-  } else if (!temperature || typeof temperature.value !== "number" || temperature.value <= 1.0) {
+    temperature = (temperature > 5.0 && temperature < 84.0) ? { value: temperature, unit: "degC" } : { value: baseline.temperature, unit: "degC" };
+  } else if (!temperature || typeof temperature.value !== "number" || temperature.value <= 5.0 || temperature.value >= 84.0) {
     temperature = { value: baseline.temperature, unit: "degC" };
   }
 

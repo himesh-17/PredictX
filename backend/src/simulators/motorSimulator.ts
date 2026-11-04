@@ -23,8 +23,8 @@ export class MotorSimulator {
 
   // Physical State Variables
   private timeStep: number = 0;
-  private baseTemp: number = 42.0;
-  private currentTemp: number = 42.0;
+  private baseTemp: number = 25.5;
+  private currentTemp: number = 25.5;
   private activeDisturbance: DisturbanceType = "NONE";
   private disturbanceDurationSec: number = 0;
 
@@ -129,11 +129,8 @@ export class MotorSimulator {
     // Vibration: nominal 0.12 g_rms +/- 0.02
     let vibrationVal = 0.12 + Math.abs(Math.sin(t * 0.1)) * 0.02 + rand() * 0.015;
 
-    // Temperature: thermal curve approaching 46.5°C steady state
-    if (this.currentTemp < 46.5) {
-      this.currentTemp += 0.02;
-    }
-    let tempVal = this.currentTemp + rand() * 0.2;
+    // Temperature: continuous organic thermal oscillation around room temperature (~25.5°C)
+    let tempVal = 25.5 + Math.sin(t * 0.12) * 0.45 + Math.cos(t * 0.07) * 0.25 + rand() * 0.1;
 
     // Apply Active Disturbance Effects
     switch (this.activeDisturbance) {

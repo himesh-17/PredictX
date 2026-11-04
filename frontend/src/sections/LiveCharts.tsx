@@ -166,7 +166,7 @@ export const LiveCharts: React.FC<LiveChartsProps> = ({ readingsHistory }) => {
               <span className="flex items-center gap-1 text-[10px] font-mono text-[#34D399] bg-[#34D399]/10 px-1.5 py-0.5 rounded border border-[#34D399]/30">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#34D399] animate-pulse"></span> STREAMING
               </span>
-              <span className="text-[11px] font-mono text-[#F87171]">Warn: 75°C, Max: 90°C</span>
+              <span className="text-[11px] font-mono text-[#F87171]">Ambient: ~25°C, Warn: 75°C</span>
             </div>
           </div>
           <div className="h-48 w-full">
@@ -180,7 +180,7 @@ export const LiveCharts: React.FC<LiveChartsProps> = ({ readingsHistory }) => {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
                 <XAxis dataKey="time" tick={{ fill: "#64748B", fontSize: 10 }} minTickGap={20} />
-                <YAxis domain={[30, 100]} tick={{ fill: "#64748B", fontSize: 10 }} />
+                <YAxis domain={[15, 60]} tick={{ fill: "#64748B", fontSize: 10 }} />
                 <Tooltip content={<CustomTooltip />} />
                 <ReferenceLine y={75} stroke="#FBBF24" strokeDasharray="3 3" />
                 <ReferenceLine y={90} stroke="#F87171" strokeDasharray="3 3" />
