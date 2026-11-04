@@ -1,4 +1,4 @@
-export type QualityStatus = "valid" | "degraded" | "invalid";
+export type QualityStatus = "valid" | "degraded" | "invalid" | "partial";
 export type DataSource = "simulation" | "hardware_esp32";
 
 export interface SensorValue {

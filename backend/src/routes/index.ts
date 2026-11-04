@@ -70,23 +70,51 @@ apiRouter.get("/motors/:motorId", (req: Request, res: Response) => {
 const IngestionSchema = z.object({
   motorId: z.string().default("MOTOR-001"),
   source: z.enum(["simulation", "hardware_esp32"]).default("hardware_esp32"),
-  quality: z.enum(["valid", "degraded", "invalid"]).default("valid"),
-  current: z.object({ value: z.number(), unit: z.string().default("A") }),
-  voltage: z.object({ value: z.number(), unit: z.string().default("V") }),
-  temperature: z.object({ value: z.number(), unit: z.string().default("degC") }),
-  vibration: z.object({ value: z.number(), unit: z.string().default("g_rms"), axis: z.string().default("X") }),
+  quality: z.enum(["valid", "degraded", "invalid", "partial"]).default("valid"),
+  current: z.object({ value: z.number(), unit: z.string().default("A") }).default({ value: 0, unit: "A" }),
+  voltage: z.object({ value: z.number(), unit: z.string().default("V") }).default({ value: 0, unit: "V" }),
+  temperature: z.object({ value: z.number(), unit: z.string().default("degC") }).default({ value: 0, unit: "degC" }),
+  vibration: z.object({ value: z.number(), unit: z.string().default("g_rms"), axis: z.string().default("XYZ") }).default({ value: 0, unit: "g_rms", axis: "XYZ" }),
 });
 
 function normalizeSensorPayload(body: any) {
   if (!body || typeof body !== "object") return body;
+
+  let quality = body.quality || "valid";
+  if (!["valid", "degraded", "invalid", "partial"].includes(quality)) {
+    quality = "partial";
+  }
+
+  let current = body.current;
+  if (typeof current === "number") current = { value: current, unit: "A" };
+  else if (!current || typeof current.value !== "number") current = { value: 0, unit: "A" };
+
+  let voltage = body.voltage;
+  if (typeof voltage === "number") voltage = { value: voltage, unit: "V" };
+  else if (!voltage || typeof voltage.value !== "number") voltage = { value: 0, unit: "V" };
+
+  // Support partial upload from ESP32 when temperature is omitted
+  let temperature = body.temperature;
+  if (typeof temperature === "number") temperature = { value: temperature, unit: "degC" };
+  else if (!temperature || typeof temperature.value !== "number") {
+    temperature = { value: 0, unit: "degC" };
+  }
+
+  // Support partial upload from ESP32 when vibration is omitted
+  let vibration = body.vibration;
+  if (typeof vibration === "number") vibration = { value: vibration, unit: "g_rms", axis: "XYZ" };
+  else if (!vibration || typeof vibration.value !== "number") {
+    vibration = { value: 0, unit: "g_rms", axis: "XYZ" };
+  }
+
   return {
     motorId: body.motorId || "MOTOR-001",
     source: body.source || "hardware_esp32",
-    quality: body.quality || "valid",
-    current: typeof body.current === "number" ? { value: body.current, unit: "A" } : body.current,
-    voltage: typeof body.voltage === "number" ? { value: body.voltage, unit: "V" } : body.voltage,
-    temperature: typeof body.temperature === "number" ? { value: body.temperature, unit: "degC" } : body.temperature,
-    vibration: typeof body.vibration === "number" ? { value: body.vibration, unit: "g_rms", axis: "X" } : body.vibration,
+    quality,
+    current,
+    voltage,
+    temperature,
+    vibration,
   };
 }
 

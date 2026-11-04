@@ -8,7 +8,7 @@ const ReadingSchema = new Schema<IReadingDocument>(
     motorId: { type: String, required: true, index: true },
     timestamp: { type: String, required: true, index: true },
     source: { type: String, required: true, enum: ["simulation", "hardware_esp32"] },
-    quality: { type: String, required: true, enum: ["valid", "degraded", "invalid"] },
+    quality: { type: String, required: true, enum: ["valid", "degraded", "invalid", "partial"] },
     current: {
       value: { type: Number, required: true },
       unit: { type: String, required: true },
